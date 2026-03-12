@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>UT Checker — EN ISO 11666 Lv.2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f8ef7;
+    --text: #e8eaf6;
+    --text2: #8891b4;
+    --text3: #555e80;
+    --ok: #22c55e;
+    --ok-bg: #052e16;
+    --ok-border: #166534;
+    --info: #38bdf8;
+    --info-bg: #082f49;
+    --info-border: #0369a1;
+    --warn: #fb923c;
+    --warn-bg: #431407;
+    --warn-border: #9a3412;
+    --danger: #f87171;
+    --danger-bg: #450a0a;
+    --danger-border: #991b1b;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .header h1 { font-size: 17px; font-weight: 700; color: var(--text); }
+
+  .norm-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+
+  .doc-ref { font-size: 10px; color: var(--text3); letter-spacing: 0.03em; }
+
+  .main { padding: 18px 16px 60px; max-width: 480px; margin: 0 auto; }
+
+  .instr {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+
+  .instr-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--info);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .instr ol { padding-left: 18px; }
+
+  .instr li {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-bottom: 3px;
+  }
+
+  .instr li b { color: var(--text); font-weight: 600; }
+
+  .instr-note {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.5;
+  }
+
+  .form-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  .field label code {
+    color: #7dd3fc;
+    font-size: 12px;
+    background: none;
+    font-family: monospace;
+  }
+
+  .field input, .field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 700;
+    padding: 14px 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    font-family: monospace;
+  }
+
+  .field select {
+    font-family: system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238891b4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--text3); font-size: 15px; font-weight: 400; }
+
+  .hint { font-size: 11px; color: var(--text3); margin-top: 5px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 18px;
+    font-weight: 700;
+    padding: 20px;
+    cursor: pointer;
+    margin-bottom: 18px;
+    font-family: system-ui, sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  .btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  .error-msg {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    font-size: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .result {
+    border-radius: var(--radius);
+    padding: 18px;
+    border: 1px solid;
+  }
+
+  .result.ok     { background: var(--ok-bg);     border-color: var(--ok-border); }
+  .result.info   { background: var(--info-bg);   border-color: var(--info-border); }
+  .result.warn   { background: var(--warn-bg);   border-color: var(--warn-border); }
+  .result.danger { background: var(--danger-bg); border-color: var(--danger-border); }
+
+  .verdict {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .result.ok     .verdict { color: var(--ok); }
+  .result.info   .verdict { color: var(--info); }
+  .result.warn   .verdict { color: var(--warn); }
+  .result.danger .verdict { color: var(--danger); }
+
+  .detail {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text2);
+    margin-bottom: 14px;
+  }
+
+  hr.sep { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 12px 0; }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+  }
+
+  .data-row:first-child { border-top: none; }
+  .data-row span:first-child { color: var(--text3); }
+  .data-row span:last-child  { color: var(--text); font-family: monospace; font-size: 13px; }
+
+  .ref-note {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  .legend {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 20px;
+  }
+
+  .legend-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .legend-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .legend-row:last-child { margin-bottom: 0; }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .legend-row p { font-size: 13px; color: var(--text2); line-height: 1.45; }
+  .legend-row b { color: var(--text); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text3);
+    padding: 20px 16px 40px;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <h1>UT Acceptance Checker</h1>
+    <span class="norm-badge">EN ISO 11666 Lv.2</span>
+  </div>
+  <div class="doc-ref">2024026-PRC-CUT01-A_02 &nbsp;·&nbsp; LA2-2OC-0005885 &nbsp;·&nbsp; Rev. 002</div>
+</div>
+
+<div class="main">
+
+  <div class="instr">
+    <div class="instr-title">Come si usa</div>
+    <ol>
+      <li>Misura la <b>lunghezza</b> dell'indicazione con la tecnica a livello fisso (§9.2)</li>
+      <li>Leggi l'<b>ampiezza H</b> in dB rispetto al DAC (0 dB = livello DAC)</li>
+      <li>Inserisci lo <b>spessore del materiale</b> nella zona di saldatura</li>
+      <li>Premi <b>Valuta</b></li>
+    </ol>
+    <div class="instr-note">
+      Calibrazione DAC secondo §8.1.3. Verificare ogni 4 ore o a cambio sonda.<br>
+      Per PJP: indicazioni da radice non sono causa di rifiuto.
+    </div>
+  </div>
+
+  <div id="error-area"></div>
+
+  <div class="form-section">
+    <div class="section-label">Dati saldatura</div>
+    <div class="grid2">
+      <div class="field">
+        <label>Spessore <code>t</code> (mm)</label>
+        <input type="number" id="t" inputmode="decimal" min="8" max="100" step="1" placeholder="20">
+        <div class="hint">8 – 100 mm</div>
+      </div>
+      <div class="field">
+        <label>Classe saldatura</label>
+        <select id="wc">
+          <option value="std">Standard</option>
+          <option value="tic2">T-IC2</option>
+        </select>
+        <div class="hint">T-IC2 = valuta L3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="section-label">Dati indicazione</div>
+    <div class="field">
+      <label>Lunghezza indicazione <code>l</code> (mm)</label>
+      <input type="number" id="l" inputmode="decimal" min="0" step="0.1" placeholder="15.0">
+    </div>
+    <div class="field">
+      <label>Ampiezza <code>H</code> (dB vs DAC)</label>
+      <input type="number" id="H" inputmode="decimal" step="0.1" placeholder="-4.0">
+      <div class="hint">Negativo = sotto DAC &nbsp;·&nbsp; 0 = livello DAC &nbsp;·&nbsp; Positivo = sopra DAC</div>
+    </div>
+  </div>
+
+  <button class="btn" id="btnValuta" onclick="valuta()">Valuta indicazione</button>
+
+  <div id="result-area"></div>
+
+  <div class="legend">
+    <div class="legend-title">Livelli EN ISO 11666 Lv.2 — fascio angolato</div>
+    <div class="legend-row">
+      <div class="dot" style="background:#22c55e"></div>
+      <p><b>Livello di valutazione: −14 dB</b><br>Sotto questa soglia nessuna azione richiesta.</p>
+    </div>
+    <div class="legend-row">
+      <div class="dot" style="background:#38bdf8"></div>
+      <p><b>Livello di registrazione: −10 dB</b> (sp. 15–100 mm) <b>/ −6 dB</b> (sp. 8–15 mm)<br>Registrare nel rapporto UT.</p>
+    </div>
+    <div class="legend-row">
+      <div class="dot" style="background:#f87171"></div>
+      <p><b>Livello di accettabilità</b> — varia con <code style="font-size:12px;color:#7dd3fc;">l/t</code><br>Sopra questa soglia: riparare la saldatura.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  LanWin2 &nbsp;·&nbsp; 2GW Offshore &nbsp;·&nbsp; Cimolai S.p.A.<br>
+  EN ISO 17640 Tecnica 1 Livello B &nbsp;·&nbsp; EN ISO 11666 Livello 2<br>
+  Solo personale certificato NDT Lv.II o Lv.III
+</div>
+
+<script>
+function valuta() {
+  var errArea = document.getElementById('error-area');
+  var resArea = document.getElementById('result-area');
+  errArea.innerHTML = '';
+  resArea.innerHTML = '';
+
+  var t  = parseFloat(document.getElementById('t').value);
+  var l  = parseFloat(document.getElementById('l').value);
+  var H  = parseFloat(document.getElementById('H').value);
+  var wc = document.getElementById('wc').value;
+
+  if (isNaN(t) || isNaN(l) || isNaN(H)) {
+    errArea.innerHTML = '<div class="error-msg">Inserire tutti e tre i valori:<br>spessore, lunghezza e ampiezza.</div>';
+    window.scrollTo(0, errArea.offsetTop - 20);
+    return;
+  }
+  if (t < 8 || t > 100) {
+    errArea.innerHTML = '<div class="error-msg">Spessore fuori dal campo di applicazione (8–100 mm).<br>Consultare il responsabile NDE.</div>';
+    window.scrollTo(0, errArea.offsetTop - 20);
+    return;
+  }
+  if (l < 0) {
+    errArea.innerHTML = '<div class="error-msg">La lunghezza dell\'indicazione non può essere negativa.</div>';
+    return;
+  }
+
+  var nl = l / t;
+
+  var accLimit;
+  if (nl <= 0.5)      accLimit = 0;
+  else if (nl <= 1.5) accLimit = -6 * (nl - 0.5) / 1.0;
+  else                accLimit = -6;
+
+  var regLimit  = (t < 15) ? -6 : -10;
+  var evalLimit = -14;
+
+  var verdict, detail, cssClass;
+
+  if (H < evalLimit) {
+    cssClass = 'ok';
+    verdict  = 'Nessuna azione';
+    detail   = 'Sotto il livello di valutazione (' + evalLimit + ' dB). Non richiede registrazione né ulteriori azioni.';
+  } else if (H < regLimit) {
+    cssClass = 'info';
+    verdict  = 'Valutare';
+    detail   = 'Superato il livello di valutazione (' + evalLimit + ' dB). Valutare natura e posizione. Registrazione non obbligatoria.';
+  } else if (H < accLimit) {
+    cssClass = 'warn';
+    verdict  = 'Registrare nel rapporto';
+    detail   = 'Superato il livello di registrazione (' + regLimit + ' dB). Indicazione da registrare nel rapporto UT con coordinate, sonda e posizione.';
+  } else {
+    if (wc === 'tic2') {
+      cssClass = 'warn';
+      verdict  = 'Valutare secondo Lv.3 (T-IC2)';
+      detail   = 'Classe T-IC2: prima di decidere il rifiuto valutare con EN ISO 11666 Livello 3. Contattare il responsabile NDE.';
+    } else {
+      cssClass = 'danger';
+      verdict  = 'NON ACCETTABILE — Riparare';
+      detail   = 'Superato il limite di accettabilità (limite = ' + accLimit.toFixed(1) + ' dB per l = ' + l + ' mm). Riparare secondo §10 (2024026-PRC-WRP01-A) e reinspezionare.';
+    }
+  }
+
+  var figRef = (t < 15) ? 'Fig. 16 (8–15 mm)' : 'Fig. 17 (15–100 mm)';
+
+  resArea.innerHTML =
+    '<div class="result ' + cssClass + '">' +
+      '<div class="verdict">' + verdict + '</div>' +
+      '<div class="detail">' + detail + '</div>' +
+      '<hr class="sep">' +
+      '<div class="data-row"><span>Spessore t</span><span>' + t + ' mm</span></div>' +
+      '<div class="data-row"><span>Lunghezza l</span><span>' + l + ' mm  (l/t = ' + nl.toFixed(3) + ')</span></div>' +
+      '<div class="data-row"><span>Ampiezza H</span><span>' + H + ' dB</span></div>' +
+      '<div class="data-row"><span>Limite accettabilità</span><span>' + accLimit.toFixed(1) + ' dB</span></div>' +
+      '<div class="data-row"><span>Livello registrazione</span><span>' + regLimit + ' dB</span></div>' +
+      '<div class="data-row"><span>Livello valutazione</span><span>' + evalLimit + ' dB</span></div>' +
+      '<div class="data-row"><span>Curva applicabile</span><span>' + figRef + '</span></div>' +
+      '<div class="ref-note">Proc. 2024026-PRC-CUT01-A_02 · EN ISO 11666 Lv.2 · Fascio angolato</div>' +
+    '</div>';
+
+  resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
