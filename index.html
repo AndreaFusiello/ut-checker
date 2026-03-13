@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0051)file:///Users/andreafusiello/Downloads/index_5.html -->
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>UT Checker — EN ISO 11666 Lv.2</title>
 <style>
@@ -349,8 +349,11 @@
     </div>
     <div class="field">
       <label>Ampiezza <code>H</code> (dB vs DAC)</label>
-      <input type="number" id="H" inputmode="decimal" step="0.1" placeholder="-4.0">
-      <div class="hint">Negativo = sotto DAC &nbsp;·&nbsp; 0 = livello DAC &nbsp;·&nbsp; Positivo = sopra DAC</div>
+      <div style="display:flex; gap:10px; align-items:stretch;">
+        <input type="number" id="H" inputmode="decimal" step="0.1" placeholder="4.0" style="flex:1;">
+        <button id="btnSegno" onclick="toggleSegno()" style="min-width:64px; background:#22263a; border:1px solid #2e3350; border-radius:8px; color:#e8eaf6; font-size:22px; font-weight:700; cursor:pointer; padding:0 10px;">−</button>
+      </div>
+      <div class="hint" style="margin-top:6px;">Inserisci il numero, poi premi <b style="color:#e8eaf6;">−</b> per sotto DAC o <b style="color:#e8eaf6;">+</b> per sopra DAC</div>
     </div>
   </div>
 
@@ -391,7 +394,9 @@ function valuta() {
 
   var t  = parseFloat(document.getElementById('t').value);
   var l  = parseFloat(document.getElementById('l').value);
-  var H  = parseFloat(document.getElementById('H').value);
+  var rawH = parseFloat(document.getElementById('H').value);
+  var segno = document.getElementById('btnSegno') && document.getElementById('btnSegno').textContent.trim() === '+' ? 1 : -1;
+  var H = isNaN(rawH) ? NaN : segno * Math.abs(rawH);
   var wc = document.getElementById('wc').value;
 
   if (isNaN(t) || isNaN(l) || isNaN(H)) {
@@ -465,5 +470,6 @@ function valuta() {
   resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
