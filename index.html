@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)file:///Users/andreafusiello/Downloads/index_5.html -->
+<!-- saved from url=(0051)file:///Users/andreafusiello/Downloads/index_6.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -309,15 +309,10 @@
   <div class="instr">
     <div class="instr-title">Come si usa</div>
     <ol>
-      <li>Misura la <b>lunghezza</b> dell'indicazione con la tecnica a livello fisso (§9.2)</li>
+      <li>Misura la <b>lunghezza</b> dell'indicazione</li>
       <li>Leggi l'<b>ampiezza H</b> in dB rispetto al DAC (0 dB = livello DAC)</li>
       <li>Inserisci lo <b>spessore del materiale</b> nella zona di saldatura</li>
-      <li>Premi <b>Valuta</b></li>
     </ol>
-    <div class="instr-note">
-      Calibrazione DAC secondo §8.1.3. Verificare ogni 4 ore o a cambio sonda.<br>
-      Per PJP: indicazioni da radice non sono causa di rifiuto.
-    </div>
   </div>
 
   <div id="error-area"></div>
@@ -349,17 +344,14 @@
     </div>
     <div class="field">
       <label>Ampiezza <code>H</code> (dB vs DAC)</label>
-      <div style="display:flex; gap:10px; align-items:stretch;">
-        <input type="number" id="H" inputmode="decimal" step="0.1" placeholder="4.0" style="flex:1;">
-        <button id="btnSegno" onclick="toggleSegno()" style="min-width:64px; background:#22263a; border:1px solid #2e3350; border-radius:8px; color:#e8eaf6; font-size:22px; font-weight:700; cursor:pointer; padding:0 10px;">−</button>
-      </div>
-      <div class="hint" style="margin-top:6px;">Inserisci il numero, poi premi <b style="color:#e8eaf6;">−</b> per sotto DAC o <b style="color:#e8eaf6;">+</b> per sopra DAC</div>
+      <input type="text" id="H" inputmode="decimal" placeholder="-4.0">
+      <div class="hint" style="margin-top:6px;">Usa il segno <b style="color:#e8eaf6;">−</b> per valori sotto DAC (es. -4.0), nessun segno per sopra DAC (es. 3.0)</div>
     </div>
   </div>
 
   <button class="btn" id="btnValuta" onclick="valuta()">Valuta indicazione</button>
 
-  <div id="result-area"></div>
+  <div id="result-area"><div class="result warn"><div class="verdict">Registrare nel rapporto</div><div class="detail">Superato il livello di registrazione (-10 dB). Indicazione da registrare nel rapporto UT con coordinate, sonda e posizione.</div><hr class="sep"><div class="data-row"><span>Spessore t</span><span>50 mm</span></div><div class="data-row"><span>Lunghezza l</span><span>30 mm  (l/t = 0.600)</span></div><div class="data-row"><span>Ampiezza H</span><span>-4 dB</span></div><div class="data-row"><span>Limite accettabilità</span><span>-0.6 dB</span></div><div class="data-row"><span>Livello registrazione</span><span>-10 dB</span></div><div class="data-row"><span>Livello valutazione</span><span>-14 dB</span></div><div class="data-row"><span>Curva applicabile</span><span>Fig. 17 (15–100 mm)</span></div><div class="ref-note">Proc. 2024026-PRC-CUT01-A_02 · EN ISO 11666 Lv.2 · Fascio angolato</div></div></div>
 
   <div class="legend">
     <div class="legend-title">Livelli EN ISO 11666 Lv.2 — fascio angolato</div>
@@ -394,9 +386,7 @@ function valuta() {
 
   var t  = parseFloat(document.getElementById('t').value);
   var l  = parseFloat(document.getElementById('l').value);
-  var rawH = parseFloat(document.getElementById('H').value);
-  var segno = document.getElementById('btnSegno') && document.getElementById('btnSegno').textContent.trim() === '+' ? 1 : -1;
-  var H = isNaN(rawH) ? NaN : segno * Math.abs(rawH);
+  var H  = parseFloat(document.getElementById('H').value);
   var wc = document.getElementById('wc').value;
 
   if (isNaN(t) || isNaN(l) || isNaN(H)) {
