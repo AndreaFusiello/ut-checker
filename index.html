@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)file:///Users/andreafusiello/Downloads/index_7.html -->
+<!-- saved from url=(0051)file:///Users/andreafusiello/Downloads/index_9.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -353,19 +353,14 @@
 
   <div id="result-area"></div>
 
-  <div class="legend">
-    <div class="legend-title">Livelli EN ISO 11666 Lv.2 — fascio angolato</div>
-    <div class="legend-row">
-      <div class="dot" style="background:#22c55e"></div>
-      <p><b>Livello di valutazione: −14 dB</b><br>Sotto questa soglia nessuna azione richiesta.</p>
-    </div>
-    <div class="legend-row">
-      <div class="dot" style="background:#38bdf8"></div>
-      <p><b>Livello di registrazione: −10 dB</b> (sp. 15–100 mm) <b>/ −6 dB</b> (sp. 8–15 mm)<br>Registrare nel rapporto UT.</p>
-    </div>
-    <div class="legend-row">
-      <div class="dot" style="background:#f87171"></div>
-      <p><b>Livello di accettabilità</b> — varia con <code style="font-size:12px;color:#7dd3fc;">l/t</code><br>Sopra questa soglia: riparare la saldatura.</p>
+  <div id="chart-area" style="display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-top:14px;">
+    <div style="font-size:11px; font-weight:700; color:var(--text3); letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px;">Grafico EN ISO 11666 Lv.2 — <span id="chart-title"></span></div>
+    <canvas id="myChart" style="width:100%; max-height:280px;"></canvas>
+    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><div style="width:20px;height:2px;background:#f87171;"></div> Accettabilità (L2)</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><div style="width:20px;height:2px;background:#fb923c;border-top:2px dashed #fb923c;"></div> Registrazione</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><div style="width:20px;height:2px;background:#555e80;border-top:2px dashed #555e80;"></div> Valutazione</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><div style="width:10px;height:10px;border-radius:50%;background:#ffffff;"></div> Indicazione</div>
     </div>
   </div>
 
@@ -407,12 +402,17 @@ function valuta() {
   var nl = l / t;
 
   var accLimit;
-  if (nl <= 0.5)      accLimit = 0;
-  else if (nl <= 1.5) accLimit = -6 * (nl - 0.5) / 1.0;
-  else                accLimit = -6;
-
-  var regLimit  = (t < 15) ? -6 : -10;
-  var evalLimit = -14;
+  if (t < 15) {
+    // Fig.16: t = 8–15 mm
+    if (nl <= 0.5)      { accLimit = 0;   regLimit = -6;  evalLimit = -14; }
+    else if (nl <= 1.0) { accLimit = -5;  regLimit = -8;  evalLimit = -14; }
+    else                { accLimit = -10; regLimit = -14; evalLimit = -14; }
+  } else {
+    // Fig.17: t = 15–100 mm
+    if (nl <= 0.5)      { accLimit = 0;   regLimit = -10; evalLimit = -14; }
+    else if (nl <= 1.5) { accLimit = -6;  regLimit = -10; evalLimit = -14; }
+    else                { accLimit = -10; regLimit = -14; evalLimit = -14; }
+  }
 
   var verdict, detail, cssClass;
 
@@ -420,15 +420,7 @@ function valuta() {
     cssClass = 'ok';
     verdict  = 'Nessuna azione';
     detail   = 'Sotto il livello di valutazione (' + evalLimit + ' dB). Non richiede registrazione né ulteriori azioni.';
-  } else if (H < regLimit) {
-    cssClass = 'info';
-    verdict  = 'Valutare';
-    detail   = 'Superato il livello di valutazione (' + evalLimit + ' dB). Valutare natura e posizione. Registrazione non obbligatoria.';
-  } else if (H < accLimit) {
-    cssClass = 'warn';
-    verdict  = 'Registrare nel rapporto';
-    detail   = 'Superato il livello di registrazione (' + regLimit + ' dB). Indicazione da registrare nel rapporto UT con coordinate, sonda e posizione.';
-  } else {
+  } else if (H >= accLimit) {
     if (wc === 'tic2') {
       cssClass = 'warn';
       verdict  = 'Valutare secondo Lv.3 (T-IC2)';
@@ -438,6 +430,14 @@ function valuta() {
       verdict  = 'NON ACCETTABILE — Riparare';
       detail   = 'Superato il limite di accettabilità (limite = ' + accLimit.toFixed(1) + ' dB per l = ' + l + ' mm). Riparare secondo §10 (2024026-PRC-WRP01-A) e reinspezionare.';
     }
+  } else if (H >= regLimit) {
+    cssClass = 'warn';
+    verdict  = 'Registrare nel rapporto';
+    detail   = 'Superato il livello di registrazione (' + regLimit + ' dB). Indicazione da registrare nel rapporto UT con coordinate, sonda e posizione.';
+  } else {
+    cssClass = 'info';
+    verdict  = 'Valutare';
+    detail   = 'Superato il livello di valutazione (' + evalLimit + ' dB). Valutare natura e posizione. Registrazione non obbligatoria.';
   }
 
   var figRef = (t < 15) ? 'Fig. 16 (8–15 mm)' : 'Fig. 17 (15–100 mm)';
@@ -458,8 +458,124 @@ function valuta() {
     '</div>';
 
   resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Disegna grafico
+  disegnaGrafico(t, l, H, nl, accLimit, regLimit, evalLimit);
+}
+
+var chartInstance = null;
+
+function disegnaGrafico(t, l, H, nl, accLimit, regLimit, evalLimit) {
+  var chartArea = document.getElementById('chart-area');
+  chartArea.style.display = 'block';
+
+  var isFig16 = t < 15;
+  document.getElementById('chart-title').textContent = isFig16
+    ? 'Fig. 16 — spessore 8–15 mm'
+    : 'Fig. 17 — spessore 15–100 mm';
+
+  // Punti delle curve (x = l/t, y = dB)
+  var xMax = Math.max(2.5, nl * 1.3);
+
+  var accPts, regPts, evalPts;
+  if (isFig16) {
+    accPts  = [{x:0,y:0},{x:0.5,y:0},{x:0.5,y:-5},{x:1.0,y:-5},{x:1.0,y:-10},{x:xMax,y:-10}];
+    regPts  = [{x:0,y:-6},{x:0.5,y:-6},{x:0.5,y:-8},{x:1.0,y:-8},{x:1.0,y:-14},{x:xMax,y:-14}];
+    evalPts = [{x:0,y:-14},{x:xMax,y:-14}];
+  } else {
+    accPts  = [{x:0,y:0},{x:0.5,y:0},{x:0.5,y:-6},{x:1.5,y:-6},{x:1.5,y:-10},{x:xMax,y:-10}];
+    regPts  = [{x:0,y:-10},{x:xMax,y:-10}];
+    evalPts = [{x:0,y:-14},{x:xMax,y:-14}];
+  }
+
+  var ctx = document.getElementById('myChart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Accettabilità',
+          data: accPts,
+          showLine: true,
+          borderColor: '#f87171',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        },
+        {
+          label: 'Registrazione',
+          data: regPts,
+          showLine: true,
+          borderColor: '#fb923c',
+          borderWidth: 1.5,
+          borderDash: [5,4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        },
+        {
+          label: 'Valutazione',
+          data: evalPts,
+          showLine: true,
+          borderColor: '#555e80',
+          borderWidth: 1.5,
+          borderDash: [3,4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        },
+        {
+          label: 'Indicazione',
+          data: [{x: nl, y: H}],
+          showLine: false,
+          borderColor: '#ffffff',
+          backgroundColor: '#ffffff',
+          pointRadius: 7,
+          pointHoverRadius: 9
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.dataset.label === 'Indicazione') {
+                return 'l/t=' + nl.toFixed(2) + '  H=' + H + ' dB';
+              }
+              return ctx.dataset.label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: 0,
+          max: xMax,
+          title: { display: true, text: 'l / t', color: '#8891b4', font: {size:11} },
+          grid: { color: '#2e3350' },
+          ticks: { color: '#8891b4', font: {size:10} }
+        },
+        y: {
+          min: -20,
+          max: 8,
+          title: { display: true, text: 'H (dB)', color: '#8891b4', font: {size:11} },
+          grid: { color: '#2e3350' },
+          ticks: { color: '#8891b4', font: {size:10} }
+        }
+      }
+    }
+  });
 }
 </script>
+<script src="./index_files/chart.umd.min.js"></script>
 
 
 </body></html>
