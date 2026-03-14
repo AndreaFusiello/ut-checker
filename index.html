@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///Users/andreafusiello/Downloads/index_10.html -->
+<!-- saved from url=(0052)file:///Users/andreafusiello/Downloads/index_11.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -404,9 +404,8 @@ function valuta() {
   var accLimit;
   if (t < 15) {
     // Fig.16: t = 8–15 mm
-    if (nl <= 0.5)      { accLimit = 0;   regLimit = -6;  evalLimit = -14; }
-    else if (nl <= 1.0) { accLimit = -5;  regLimit = -8;  evalLimit = -14; }
-    else                { accLimit = -10; regLimit = -14; evalLimit = -14; }
+    if (nl <= 1.0) { accLimit = -4;  regLimit = -8;  evalLimit = -14; }
+    else           { accLimit = -10; regLimit = -14; evalLimit = -14; }
   } else {
     // Fig.17: t = 15–100 mm
     if (nl <= 0.5)      { accLimit = 0;   regLimit = -10; evalLimit = -14; }
@@ -479,8 +478,8 @@ function disegnaGrafico(t, l, H, nl, accLimit, regLimit, evalLimit) {
 
   var accPts, regPts, evalPts;
   if (isFig16) {
-    accPts  = [{x:0,y:0},{x:0.5,y:0},{x:0.5,y:-5},{x:1.0,y:-5},{x:1.0,y:-10},{x:xMax,y:-10}];
-    regPts  = [{x:0,y:-6},{x:0.5,y:-6},{x:0.5,y:-8},{x:1.0,y:-8},{x:1.0,y:-14},{x:xMax,y:-14}];
+    accPts  = [{x:0,y:-4},{x:1.0,y:-4},{x:1.0,y:-10},{x:xMax,y:-10}];
+    regPts  = [{x:0,y:-8},{x:1.0,y:-8},{x:1.0,y:-14},{x:xMax,y:-14}];
     evalPts = [{x:0,y:-14},{x:xMax,y:-14}];
   } else {
     accPts  = [{x:0,y:0},{x:0.5,y:0},{x:0.5,y:-6},{x:1.0,y:-6},{x:1.0,y:-10},{x:xMax,y:-10}];
