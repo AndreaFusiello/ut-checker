@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///Users/andreafusiello/Downloads/index_12.html -->
+<!-- saved from url=(0052)file:///Users/andreafusiello/Downloads/index_13.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<script src="./index_files/chart.umd.min.js"></script>
 <title>UT Checker — EN ISO 11666 Lv.2</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -294,7 +293,7 @@
     line-height: 1.7;
   }
 </style>
-</head>
+<script src="./index_files/chart.umd.min.js"></script></head>
 <body>
 
 <div class="header">
@@ -481,6 +480,10 @@ function valuta() {
 var chartInstance = null;
 
 function disegnaGrafico(t, l, H, nl, accLimit, regLimit, evalLimit, wc) {
+  if (!window._chartReady || typeof Chart === 'undefined') {
+    setTimeout(function() { disegnaGrafico(t, l, H, nl, accLimit, regLimit, evalLimit, wc); }, 100);
+    return;
+  }
   var chartArea = document.getElementById('chart-area');
   chartArea.style.display = 'block';
 
@@ -612,6 +615,15 @@ function disegnaGrafico(t, l, H, nl, accLimit, regLimit, evalLimit, wc) {
     }
   });
 }
+</script>
+<script>
+// Carica Chart.js dinamicamente e poi abilita il grafico
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  s.onload = function() { window._chartReady = true; };
+  document.head.appendChild(s);
+})();
 </script>
 
 
